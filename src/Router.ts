@@ -8,7 +8,7 @@ import {
 	Connection,
 	createConnection,
 	getRepository,
-	Repository 
+	Repository
 } from "typeorm";
 
 import { FileEntry, ShortenedURL, AccountEntry } from "./entities";
@@ -31,7 +31,7 @@ class APIService {
 	public redis: redis.Redis = new redis(); // TODO: Parse login information.
 
 	public constructor(public app: FastifyInstance, options?: APIServiceOptions) {
-		this.port = options.port || parseInt(process.env.PORT);
+		this.port = options.port || parseInt(process.env.PORT, 10);
 		this.app.register(require("fastify-multipart"));
 
 		/// Setup our routes here.
@@ -210,7 +210,7 @@ class APIService {
 
 		const account = await this.accounts.findOne({ id: file.uploadedBy });
 
-		reply.view("../views/View.ejs", { 
+		reply.view("../views/View.ejs", {
 			image: `https://${process.env.HOSTNAME}/u/${id}`,
 			url: `https://${process.env.HOSTNAME}/view/${id}`,
 			title: account.embed_title,
