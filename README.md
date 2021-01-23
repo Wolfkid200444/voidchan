@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/voidchan/voidchan/badge)](https://www.codefactor.io/repository/github/voidchan/voidchan)
+
 # VoidChan - Multi-Format CDN that will fit your needs.
 *This project is in early stages and is subject to massive changes.*
 
