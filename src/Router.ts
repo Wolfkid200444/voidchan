@@ -28,7 +28,7 @@ class APIService {
 	public files: Repository<FileEntry>;
 	public accounts: Repository<AccountEntry>;
 	public urls: Repository<ShortenedURL>;
-	public redis: redis.Redis = new redis(); // TODO: Parse login information.
+	public redis: redis.Redis = new redis({ port: 6379, host: process.env.REDIS_HOST, password: process.env.REDIS_PASSWORD}); // TODO: Parse login information.
 
 	public constructor(public app: FastifyInstance, options?: APIServiceOptions) {
 		this.port = options.port || parseInt(process.env.PORT, 10);
@@ -57,7 +57,7 @@ class APIService {
 		(async () => {
 			this.db = await createConnection({
 				type: "postgres",
-				host: "localhost",
+				host: process.env.POSTGRES_HOST,
 				port: 5432,
 				username: "postgres",
 				password: process.env.POSTGRES_PASSWORD,
