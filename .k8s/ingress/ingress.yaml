@@ -22,7 +22,7 @@ spec:
             name: voidchan-api-service
             port:
               number: 3000
-  tls:
-  - hosts:
-    - cdn.voidchan.gg
-    secretName: cloudflare
+  # tls:
+  # - hosts:
+  #   - cdn.voidchan.gg
+    # secretName: cloudflare
