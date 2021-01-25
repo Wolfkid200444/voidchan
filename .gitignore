@@ -5,3 +5,4 @@ yarn-error.log
 
 .k8s/configmap.yaml
 .k8s/ingress/certs.yaml
+.k8s/ingress/service-key.yaml
