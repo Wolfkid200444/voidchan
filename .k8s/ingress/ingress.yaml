@@ -8,13 +8,17 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    cert-manager.io/issuer: prod-issuer
+    cert-manager.io/issuer-kind: OriginIssuer
+    cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
   name: ingress
   namespace: voidchan-ns
 spec:
   tls:
   - hosts:
     - cdn.voidchan.gg
-    secretName: cloudflare
+    secretName: voidchan-tls
   rules:
   - host: cdn.voidchan.gg
     http:
@@ -25,4 +29,4 @@ spec:
           service:
             name: voidchan-api-service
             port:
-              number: 80
+              number: 3000
