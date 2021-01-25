@@ -1,3 +1,31 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: IngressClass
+metadata:
+  name: istio
+spec:
+  controller: istio.io/ingress-controller
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: voidchan-ns
+spec:
+  ingressClassName: istio
+  rules:
+  - host: cdn.voidchan.gg
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: voidchan-api-service
+          servicePort: 3000
+  tls:
+  - hosts:
+    - cdn.voidchan.gg
+    secretName: cloudflare
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -33,12 +61,10 @@ spec:
       labels:
         app: voidchan
     spec:
-      imagePullSecrets:
-      - name: docker-login
       containers:
       - name: voidchan
         imagePullPolicy: Always
-        image: "docker.pkg.github.com/voidchan/voidchan/voidchan:latest"
+        image: "voidchan/voidchan:latest"
         envFrom:
           - configMapRef:
               name: voidchan-api-cfg

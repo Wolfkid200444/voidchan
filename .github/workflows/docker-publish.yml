@@ -38,6 +38,8 @@ jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push_to_github_packges:
+      name: Push Docker image to Github Packages
+
     # Ensure test job passes before pushing image.
     needs: test
 
@@ -76,6 +78,7 @@ jobs:
           docker push $IMAGE_ID:$VERSION
   push_to_docker_registry:
     name: Push Docker image to Docker Hub
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
