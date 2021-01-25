@@ -18,13 +18,12 @@ spec:
   tls:
   - hosts:
     - cdn.voidchan.gg
-    secretName: voidchan-tls
+    secretName: example-tls
   rules:
   - host: cdn.voidchan.gg
     http:
       paths:
       - path: /
-        pathType: Prefix
         backend:
           service:
             name: voidchan-api-service
