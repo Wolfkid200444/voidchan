@@ -38,7 +38,7 @@ jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push_to_github_packges:
-      name: Push Docker image to Github Packages
+    name: Push Docker image to Github Packages
 
     # Ensure test job passes before pushing image.
     needs: test
