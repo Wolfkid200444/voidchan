@@ -33,6 +33,8 @@ spec:
       labels:
         app: voidchan
     spec:
+      imagePullSecrets:
+      - name: docker-login
       containers:
       - name: voidchan
         imagePullPolicy: Always
