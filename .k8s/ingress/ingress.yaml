@@ -11,6 +11,10 @@ metadata:
   name: ingress
   namespace: voidchan-ns
 spec:
+  tls:
+  - hosts:
+    - cdn.voidchan.gg
+    secretName: cloudflare
   rules:
   - host: cdn.voidchan.gg
     http:
@@ -21,8 +25,4 @@ spec:
           service:
             name: voidchan-api-service
             port:
-              number: 3000
-  # tls:
-  # - hosts:
-  #   - cdn.voidchan.gg
-    # secretName: cloudflare
+              number: 80

@@ -4,3 +4,4 @@ yarn-error.log
 .env
 
 .k8s/configmap.yaml
+.k8s/ingress/certs.yaml
