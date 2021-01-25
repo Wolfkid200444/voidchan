@@ -1,31 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
-kind: IngressClass
-metadata:
-  name: istio
-spec:
-  controller: istio.io/ingress-controller
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: ingress
-  namespace: voidchan-ns
-spec:
-  ingressClassName: istio
-  rules:
-  - host: cdn.voidchan.gg
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          serviceName: voidchan-api-service
-          servicePort: 3000
-  tls:
-  - hosts:
-    - cdn.voidchan.gg
-    secretName: cloudflare
----
+
 apiVersion: v1
 kind: Service
 metadata:
