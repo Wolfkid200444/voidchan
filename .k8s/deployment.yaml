@@ -1,26 +1,8 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: voidchan-api-service
-  namespace: voidchan-ns
-  labels:
-    app: voidchan
-spec:
-  type: NodePort
-  ports:
-  - protocol: TCP
-    nodePort: 31797
-    port: 80
-    targetPort: 3000
-    name: http
-  selector:
-    app: voidchan
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: voidchan
-  namespace: voidchan-ns
+  namespace: voidchan
   labels:
     app: voidchan
 spec:
