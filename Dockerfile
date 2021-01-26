@@ -11,6 +11,4 @@ COPY . .
 RUN yarn global add typescript \
 && yarn build
 
-EXPOSE 3000
-
 CMD ["node", "."]
