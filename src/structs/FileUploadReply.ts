@@ -1,6 +1,6 @@
 export interface FileUploadReply {
 	statusCode: number;
-	files: Array<FileReply>
+	files: Array<FileReply>;
 }
 
 export interface FileReply {

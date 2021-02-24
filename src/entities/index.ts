@@ -1,3 +1,3 @@
-export * from "./File";
-export * from "./ShortenedURL";
-export * from "./Account";
+export * from './File';
+export * from './ShortenedUrl';
+export * from './Account';

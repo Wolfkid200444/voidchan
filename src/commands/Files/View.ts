@@ -1,27 +1,25 @@
-import { Command } from "discord-akairo";
-import { MessageAttachment } from "discord.js";
-import { MessageEmbed } from "discord.js";
-import { Message } from "discord.js";
+import { Command } from 'discord-akairo';
+import { MessageEmbed, Message } from 'discord.js';
 import * as mime from 'mime';
 
 export default class PingCommand extends Command {
-	constructor() {
+	public constructor() {
 		super('view', {
 			aliases: ['view'],
 			args: [
 				{
-					id: "id",
-					type: "string",
-					match: "phrase"
-				}
-			]
+					id: 'id',
+					type: 'string',
+					match: 'phrase',
+				},
+			],
 		});
 	}
 
 	public async exec(message: Message, args: any) {
 		const account = await this.client.router.accounts.findOne({ user: message.author.id });
 		if (!account) return message.util.send("You don't have an account! To create one please do `!create`", { replyTo: message.id });
-		
+
 		const file = await this.client.router.files.findOne({ id: args.id, uploadedBy: account.id });
 		if (!file) return message.util.send("I was unable to find the file you're looking for.", { replyTo: message.id });
 
@@ -32,12 +30,13 @@ export default class PingCommand extends Command {
 			.setFooter(`Views: ${file.views}`)
 			.setAuthor(message.member.displayName, message.author.displayAvatarURL({ size: 2048 }));
 
-		if (extension === "txt") {
+		if (extension === 'txt') {
 			embed.setDescription(`You can view the file via the attached link.\nhttp://${process.env.HOSTNAME}/u/${file.id}`);
-			return message.channel.send({ embed: embed, replyTo: message.id });
-		} else {
-			embed.setImage(`attachment://file.${extension}`);
-			return message.channel.send({ embed: embed, files: [{ attachment: file.buffer, name: `file.${extension}` }], replyTo: message.id })
+
+			return message.channel.send({ embed, replyTo: message.id });
 		}
+		embed.setImage(`attachment://file.${extension}`);
+
+		return message.channel.send({ embed, files: [{ attachment: file.buffer, name: `file.${extension}` }], replyTo: message.id });
 	}
 }
