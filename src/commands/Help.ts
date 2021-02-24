@@ -4,7 +4,7 @@ import { Message, MessageEmbed } from "discord.js";
 export default class PingCommand extends Command {
     constructor() {
         super("help", {
-            aliases: ["commands"]
+            aliases: ["help", "commands"]
         });
     }
 
@@ -29,6 +29,6 @@ export default class PingCommand extends Command {
             helpEmbed.addField(cat.id, cat.map((v) => `\`${v.id}\``).join(", "), false);
         });
 
-        return message.util.send(helpEmbed, { replyTo: message.id });
+        return message.util.send({ embed: helpEmbed, replyTo: message.id });
     }
 }
