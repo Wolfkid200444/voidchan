@@ -12,7 +12,7 @@ export default class PingCommand extends Command {
 	public *args() {
 		const keyArg = yield {
 			type: (_message: Message, key: string): string => {
-				key = key.toLowerCase();
+				key = key !== null ? key.toLowerCase() : null;
 
 				return ['color', 'username', 'title'].includes(key) ? key : 'default';
 			},
