@@ -1,5 +1,4 @@
-import { Entity, PrimaryColumn, Column, JoinColumn, OneToOne } from "typeorm";
-
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 type AccountId = string;
 
@@ -7,14 +6,14 @@ type AccountId = string;
 export class FileEntry {
 	@PrimaryColumn()
 	id: string;
-	
+
 	@Column()
 	mimetype: string;
 
-	@Column({ type: "bytea" })
+	@Column({ type: 'bytea' })
 	buffer: Buffer;
 
-	@Column({ type: "timestamp" })
+	@Column({ type: 'timestamp' })
 	uploadDate: Date;
 
 	@Column({ default: 0 })

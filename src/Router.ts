@@ -1,24 +1,24 @@
+import { readFileSync } from 'fs';
 import {
 	FastifyInstance,
 	FastifyRequest as Request,
 	FastifyReply as Reply
-} from "fastify";
+} from 'fastify';
 
 import {
 	Connection,
 	createConnection,
 	getRepository,
 	Repository
-} from "typeorm";
+} from 'typeorm';
 
-import { FileEntry, ShortenedURL, AccountEntry } from "./entities";
-import { FileUploadReply, ShortenedURLReply } from "./structs";
-import { randomString } from "./util/randomString";
-import { Logger } from "@ayanaware/logger";
-import { readFileSync } from "fs";
+import { Logger } from '@ayanaware/logger';
+import * as mime from 'mime';
+import * as Redis from 'ioredis';
+import { FileEntry, ShortenedUrl, AccountEntry } from './entities';
+import { FileUploadReply, ShortenedURLReply } from './structs';
+import { randomString } from './util/RandomString';
 
-import * as mime from "mime";
-import * as redis from "ioredis";
 
 const logger = Logger.get();
 
@@ -27,118 +27,123 @@ class APIService {
 	public db: Connection;
 	public files: Repository<FileEntry>;
 	public accounts: Repository<AccountEntry>;
-	public urls: Repository<ShortenedURL>;
-	public redis: redis.Redis = new redis({ port: 6379, host: process.env.REDIS_ADDRESS, password: process.env.REDIS_PASSWORD}); // TODO: Parse login information.
+	public urls: Repository<ShortenedUrl>;
+	public redis: Redis.Redis = new Redis({ port: 6379, host: process.env.REDIS_ADDRESS, password: process.env.REDIS_PASSWORD}); // TODO: Parse login information.
 
 	public constructor(public app: FastifyInstance, options?: APIServiceOptions) {
 		this.port = options.port || parseInt(process.env.PORT, 10);
-		this.app.register(require("fastify-multipart"));
+		this.app.register(require('fastify-multipart'));
 
 		/// Setup our routes here.
-		this.app.post("/api/providers/sharex", this.handleShareXUpload.bind(this));
-		this.app.post("/api/providers/shortener", this.shortenURL.bind(this));
+		this.app.post('/api/providers/sharex', this.handleShareXUpload.bind(this));
+		this.app.post('/api/providers/shortener', this.shortenURL.bind(this));
 
 		/// View statistics.
-		this.app.get("/api/providers/shortener/:id", this.viewShortenURL.bind(this));
-		this.app.get("/api/providers/sharex/:id", this.viewShareXUpload.bind(this));
+		this.app.get('/api/providers/shortener/:id', this.viewShortenURL.bind(this));
+		this.app.get('/api/providers/sharex/:id', this.viewShareXUpload.bind(this));
 
 		/// For uploaded content.
-		this.app.get("/u/:id", this.handleGetFile.bind(this));
-		this.app.get("/v/:id", this.handleFullGetFile.bind(this));
+		this.app.get('/u/:id', this.handleGetFile.bind(this));
+		this.app.get('/v/:id', this.handleFullGetFile.bind(this));
 
 		/// For shortened URLs.
-		this.app.get("/:id", this.handleShortenedURL.bind(this));
+		this.app.get('/:id', this.handleShortenedURL.bind(this));
 
-		this.app.get("/favicon.ico", (req: any, res: Reply) => {
-			res.header("Content-Type", "image/x-icon")
-			res.send(readFileSync("../assets/favicon.ico"));
+		this.app.get('/favicon.ico', (req: any, res: Reply) => {
+			res.header('Content-Type', 'image/x-icon');
+			res.send(readFileSync('../assets/favicon.ico'));
 		});
 
 		(async () => {
 			this.db = await createConnection({
-				type: "postgres",
+				type: 'postgres',
 				host: process.env.POSTGRES_ADDRESS,
 				port: 5432,
-				username: "postgres",
+				username: 'postgres',
 				password: process.env.POSTGRES_PASSWORD,
-				database: "voidchan",
+				database: 'voidchan',
 				synchronize: true,
 				entities: [
 					FileEntry,
-					ShortenedURL,
-					AccountEntry
-				]
+					ShortenedUrl,
+					AccountEntry,
+				],
 			});
 		})().then(() => {
 			this.files = getRepository(FileEntry);
-			this.urls = getRepository(ShortenedURL);
+			this.urls = getRepository(ShortenedUrl);
 			this.accounts = getRepository(AccountEntry);
 		});
 	}
 
-	public listen() {
+	public async listen() {
 		try {
-			this.app.listen(this.port);
+			await this.app.listen(this.port);
 			logger.info(`Server listening on port ${this.port}`);
 		} catch (e) {
 			this.app.log.error(e);
 			process.exit(1);
-		};
+		}
 	}
 
 	private async viewShortenURL(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
 			reply.status(401);
-			reply.header("Content-Type", "text/plain");
-			return "You are unable to access this endpoint.";
+			reply.header('Content-Type', 'text/plain');
+
+			return 'You are unable to access this endpoint.';
 		}
 		const id = (req.params as any).id;
 		const url = await this.urls.findOne({ id });
 
 		if (!url) {
-			reply.header("Content-Type", "text/plain");
+			reply.header('Content-Type', 'text/plain');
 			reply.status(404);
-			return "The wizards have been unable to find the url you are looking for!";
+
+			return 'The wizards have been unable to find the url you are looking for!';
 		}
 
 		return {
 			id: url.id,
 			stats: {
-				clicks: url.redirects
-			}
-		}
+				clicks: url.redirects,
+			},
+		};
 	}
 
 	private async viewShareXUpload(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
 			reply.status(401);
-			reply.header("Content-Type", "text/plain");
-			return "You are unable to access this endpoint.";
+			reply.header('Content-Type', 'text/plain');
+
+			return 'You are unable to access this endpoint.';
 		}
 		const id = (req.params as any).id;
 
 		const image = await this.files.findOne({ id });
-		
+
 		if (!image) {
-			reply.header("Content-Type", "text/plain");
+			reply.header('Content-Type', 'text/plain');
 			reply.status(404);
-			return "The wizards have been unable to find the file you are looking for!";
+
+			return 'The wizards have been unable to find the file you are looking for!';
 		}
 
 		return {
 			imageId: image.id,
 			stats: {
 				views: image.views,
-				uploadDate: image.uploadDate
-			}
-		}
+				uploadDate: image.uploadDate,
+			},
+		};
 	}
 
 	private async shortenURL(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
 			reply.status(401);
-			reply.header("Content-Type", "text/plain");
-			return "You are unable to access this endpoint.";
+			reply.header('Content-Type', 'text/plain');
+
+			return 'You are unable to access this endpoint.';
 		}
 
 		const body = req.body as any;
@@ -146,14 +151,14 @@ class APIService {
 		if (!body.url) {
 			return {
 				statusCode: 200,
-				error: "Unable to parse body, missing URL property."
-			}
+				error: 'Unable to parse body, missing URL property.',
+			};
 		}
 
 		const url = body.url;
 		const id = body.slug ? body.slug : randomString(4, false);
 
-		const urlEntity = new ShortenedURL();
+		const urlEntity = new ShortenedUrl();
 
 		urlEntity.destUrl = url;
 		urlEntity.id = id;
@@ -163,7 +168,7 @@ class APIService {
 
 		return {
 			shortened: `https://${process.env.SHORT_HOSTNAME}/${id}`,
-			url
+			url,
 		} as ShortenedURLReply;
 	}
 
@@ -184,40 +189,42 @@ class APIService {
 
 	private async handleGetFile(req: Request, reply: Reply) {
 		const id = (req.params as any).id;
-		const file = await this.getFile(id)
+		const file = await this.getFile(id);
 
 		if (!file) {
-			reply.header("Content-Type", "text/plain");
+			reply.header('Content-Type', 'text/plain');
 			reply.status(404);
-			return "Image not found!";
+
+			return 'Image not found!';
 		}
 
-		const mimetype = mime.getType(id.split(".")[1]);
-		reply.header("Content-Type", mimetype);
+		const mimetype = mime.getType(id.split('.')[1]);
+		reply.header('Content-Type', mimetype);
 
 		reply.send(file);
 	}
 
 	private async handleFullGetFile(req: Request, reply: any) {
 		const id = (req.params as any).id;
-		const file = await this.files.findOne({ id: id.split(".")[0] })
+		const file = await this.files.findOne({ id: id.split('.')[0] });
 
 		if (!file) {
-			reply.header("Content-Type", "text/plain");
+			reply.header('Content-Type', 'text/plain');
 			reply.status(404);
-			return "Image not found!";
+
+			return 'Image not found!';
 		}
 
 		const account = await this.accounts.findOne({ id: file.uploadedBy });
 
-		reply.view("../views/View.ejs", {
+		reply.view('../views/View.ejs', {
 			image: `https://${process.env.HOSTNAME}/u/${id}`,
 			url: `https://${process.env.HOSTNAME}/view/${id}`,
 			title: account.embed_title,
 			color: account.embed_color,
 			username: account.embed_username,
 			fileName: id,
-			host: process.env.HOSTNAME
+			host: process.env.HOSTNAME,
 		});
 	}
 
@@ -227,8 +234,9 @@ class APIService {
 		const account = await this.accounts.findOne({ id: req.headers.authorization });
 		if (!account) {
 			reply.status(401);
-			reply.header("Content-Type", "text/plain");
-			return "You are unable to access this endpoint.";
+			reply.header('Content-Type', 'text/plain');
+
+			return 'You are unable to access this endpoint.';
 		}
 
 		const data = await req.file();
@@ -249,28 +257,28 @@ class APIService {
 
 		await this.files.save(file);
 		await this.cacheFile(id, fileBuffer);
-		logger.info(`Cached file ${id.split(".")[0]} uploaded by user ${account.id}`);
+		logger.info(`Cached file ${id.split('.')[0]} uploaded by user ${account.id}`);
 
-		reply.header("Content-Type", "application/json");
+		reply.header('Content-Type', 'application/json');
 
 		return {
 			statusCode: 200,
 			files: [
 				{
 					name: `${token}.${mimetype}`,
-					url: `${req.protocol}://${req.hostname}/${req.headers.embedded && req.headers.embedded !== "false" ? "v" : "u"}/${id}`
-		
-				}
-		]} as FileUploadReply;
+					url: `${req.protocol}://${req.hostname}/${req.headers.embedded && req.headers.embedded !== 'false' ? 'v' : 'u'}/${id}`,
+
+				},
+			]} as FileUploadReply;
 	}
 
 	private async getFile(id: string): Promise<Buffer> {
 		const image = await this.redis.getBuffer(id);
 		if (!image) {
-			const fetchedImage = await this.files.findOne({ id: id.split(".")[0] }) as FileEntry;
+			const fetchedImage = await this.files.findOne({ id: id.split('.')[0] });
 
-			await this.redis.set(id, fetchedImage.buffer, "EX", 3600);
-			logger.info(`Cached file ${id.split(".")[0]} uploaded by ${fetchedImage.uploadedBy}`);
+			await this.redis.set(id, fetchedImage.buffer, 'EX', 3600);
+			logger.info(`Cached file ${id.split('.')[0]} uploaded by ${fetchedImage.uploadedBy}`);
 
 			return fetchedImage.buffer;
 		}
@@ -278,8 +286,8 @@ class APIService {
 		return image;
 	}
 
-	private cacheFile(id: string, buffer: Buffer) {
-		return this.redis.set(id, buffer, "EX", 3600);
+	private async cacheFile(id: string, buffer: Buffer) {
+		return this.redis.set(id, buffer, 'EX', 3600);
 	}
 }
 

@@ -212,9 +212,7 @@ module.exports = {
         "unicorn/filename-case": [
             "error",
             {
-                "cases": {
-                    "undefined": true
-                }
+                "case": "pascalCase"
             }
         ],
         "use-isnan": "error",

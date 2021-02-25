@@ -1,11 +1,11 @@
-
+/* eslint-disable id-blacklist */
 /**
  * Credits to TannerReynolds (https://github.com/TannerReynolds/ShareX-Upload-Server) for this function.
  */
 export function randomString(number: number | string, symbols: boolean) {
 	let text = '';
 	let possible: string;
-	if(symbols !== true) {
+	if (!symbols) {
 		possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	} else {
 		possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()-_=+[]{}|;:/?><,.';
@@ -13,5 +13,6 @@ export function randomString(number: number | string, symbols: boolean) {
 	for (let i = 0; i < number; i++) {
 		text += possible.charAt(Math.floor(Math.random() * possible.length));
 	}
+
 	return text;
 }

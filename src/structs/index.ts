@@ -1,2 +1,2 @@
-export * from "./FileUploadReply";
-export * from "./ShortenedURLReply";
+export * from './FileUploadReply';
+export * from './ShortenedURLReply';

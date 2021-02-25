@@ -1,7 +1,7 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity()
-export class ShortenedURL {
+export class ShortenedUrl {
 	@PrimaryColumn()
 	id: string;
 

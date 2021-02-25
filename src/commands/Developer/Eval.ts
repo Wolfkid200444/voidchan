@@ -2,10 +2,10 @@
  * Credits to Crawl for this command.
  */
 
+import * as util from 'util';
 import { stripIndents } from 'common-tags';
 import { Command } from 'discord-akairo';
 import { Message, Util } from 'discord.js';
-import * as util from 'util';
 
 const NL = '!!NL!!';
 const NL_PATTERN = new RegExp(NL, 'g');
@@ -27,10 +27,10 @@ export default class EvalCommand extends Command {
 					match: 'content',
 					type: 'string',
 					prompt: {
-						start: (message: Message) => `You must supply some code for me to eval.`
-					}
-				}
-			]
+						start: (message: Message) => 'You must supply some code for me to eval.',
+					},
+				},
+			],
 		});
 	}
 
@@ -38,16 +38,20 @@ export default class EvalCommand extends Command {
 		const code = args.code as string;
 		const doReply = (val: string | Error) => {
 			if (val instanceof Error) {
-				message.util.send(`Callback error: \`${val}\``, { replyTo: message.id });
+				// eslint-disable-next-line no-void
+				void message.util.send(`Callback error: \`${val}\``, { replyTo: message.id });
 			} else {
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				const result = this._result(val, process.hrtime(this.hrStart));
-				for (const res of result) message.util.send(res);
+				// eslint-disable-next-line no-void
+				for (const res of result) void message.util.send(res);
 			}
 		};
 
 		let hrDiff;
 		try {
 			const hrStart = process.hrtime();
+			// eslint-disable-next-line no-eval
 			this.lastResult = eval(code);
 			hrDiff = process.hrtime(hrStart);
 		} catch (error) {
@@ -55,9 +59,11 @@ export default class EvalCommand extends Command {
 		}
 
 		this.hrStart = process.hrtime();
+		// eslint-disable-next-line no-underscore-dangle
 		const result = this._result(this.lastResult, hrDiff, code);
 		// @ts-ignore
 		if (Array.isArray(result)) return result.map(async res => message.util.send(res, { replyTo: message.id }));
+
 		return message.util.send(result, { replyTo: message.id });
 	}
 
@@ -83,7 +89,7 @@ export default class EvalCommand extends Command {
 				${inspected}
 				\`\`\`
 			`,
-				{ maxLength: 1900, prepend, append },
+				{ maxLength: 1900, prepend, append }
 			);
 		}
 
@@ -94,16 +100,20 @@ export default class EvalCommand extends Command {
 			${inspected}
 			\`\`\`
 		`,
-			{ maxLength: 1900, prepend, append },
+			{ maxLength: 1900, prepend, append }
 		);
 	}
 
+	// @ts-ignore
 	private get sensitivePattern() {
+		// eslint-disable-next-line no-underscore-dangle
 		if (!this._sensitivePattern) {
 			const token = this.client.token.split('').join('[^]{0,2}');
 			const revToken = this.client.token.split('').reverse().join('[^]{0,2}');
 			Object.defineProperty(this, '_sensitivePattern', { value: new RegExp(`${token}|${revToken}`, 'g') });
 		}
+
+		// eslint-disable-next-line no-underscore-dangle
 		return this._sensitivePattern;
 	}
 }
