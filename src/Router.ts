@@ -32,7 +32,8 @@ class APIService {
 
 	public constructor(public app: FastifyInstance, options?: APIServiceOptions) {
 		this.port = options.port || parseInt(process.env.PORT, 10);
-		this.app.register(require('fastify-multipart'));
+		// eslint-disable-next-line no-void
+		void this.app.register(require('fastify-multipart'));
 
 		/// Setup our routes here.
 		this.app.post('/api/providers/sharex', this.handleShareXUpload.bind(this));
@@ -49,9 +50,9 @@ class APIService {
 		/// For shortened URLs.
 		this.app.get('/:id', this.handleShortenedURL.bind(this));
 
-		this.app.get('/favicon.ico', (req: any, res: Reply) => {
-			res.header('Content-Type', 'image/x-icon');
-			res.send(readFileSync('../assets/favicon.ico'));
+		this.app.get('/favicon.ico', async (req: any, res: Reply) => {
+			await res.header('Content-Type', 'image/x-icon');
+			await res.send(readFileSync('../assets/favicon.ico'));
 		});
 
 		(async () => {
@@ -88,8 +89,8 @@ class APIService {
 
 	private async viewShortenURL(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
-			reply.status(401);
-			reply.header('Content-Type', 'text/plain');
+			await reply.status(401);
+			await reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -97,8 +98,8 @@ class APIService {
 		const url = await this.urls.findOne({ id });
 
 		if (!url) {
-			reply.header('Content-Type', 'text/plain');
-			reply.status(404);
+			await reply.header('Content-Type', 'text/plain');
+			await reply.status(404);
 
 			return 'The wizards have been unable to find the url you are looking for!';
 		}
@@ -113,8 +114,8 @@ class APIService {
 
 	private async viewShareXUpload(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
-			reply.status(401);
-			reply.header('Content-Type', 'text/plain');
+			await reply.status(401);
+			await reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -123,8 +124,8 @@ class APIService {
 		const image = await this.files.findOne({ id });
 
 		if (!image) {
-			reply.header('Content-Type', 'text/plain');
-			reply.status(404);
+			await reply.header('Content-Type', 'text/plain');
+			await reply.status(404);
 
 			return 'The wizards have been unable to find the file you are looking for!';
 		}
@@ -140,8 +141,8 @@ class APIService {
 
 	private async shortenURL(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
-			reply.status(401);
-			reply.header('Content-Type', 'text/plain');
+			await reply.status(401);
+			await reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -181,7 +182,7 @@ class APIService {
 			return reply.callNotFound();
 		}
 
-		reply.redirect(301, url.destUrl);
+		await reply.redirect(301, url.destUrl);
 
 		// Update stats.
 		await this.urls.increment({ id }, 'redirects', 1);
@@ -192,16 +193,16 @@ class APIService {
 		const file = await this.getFile(id);
 
 		if (!file) {
-			reply.header('Content-Type', 'text/plain');
-			reply.status(404);
+			await reply.header('Content-Type', 'text/plain');
+			await reply.status(404);
 
 			return 'Image not found!';
 		}
 
 		const mimetype = mime.getType(id.split('.')[1]);
-		reply.header('Content-Type', mimetype);
+		await reply.header('Content-Type', mimetype);
 
-		reply.send(file);
+		await reply.send(file);
 	}
 
 	private async handleFullGetFile(req: Request, reply: any) {
@@ -209,8 +210,8 @@ class APIService {
 		const file = await this.files.findOne({ id: id.split('.')[0] });
 
 		if (!file) {
-			reply.header('Content-Type', 'text/plain');
-			reply.status(404);
+			await reply.header('Content-Type', 'text/plain');
+			await reply.status(404);
 
 			return 'Image not found!';
 		}
@@ -233,8 +234,8 @@ class APIService {
 	private async handleShareXUpload(req: any, reply: any) {
 		const account = await this.accounts.findOne({ id: req.headers.authorization });
 		if (!account) {
-			reply.status(401);
-			reply.header('Content-Type', 'text/plain');
+			await reply.status(401);
+			await reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -259,7 +260,7 @@ class APIService {
 		await this.cacheFile(id, fileBuffer);
 		logger.info(`Cached file ${id.split('.')[0]} uploaded by user ${account.id}`);
 
-		reply.header('Content-Type', 'application/json');
+		await reply.header('Content-Type', 'application/json');
 
 		return {
 			statusCode: 200,
