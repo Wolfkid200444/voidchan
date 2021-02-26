@@ -43,10 +43,10 @@ export default class PingCommand extends Command {
             const filepath = v.filepath.split(/\/+/);
             const categoryID = filepath[filepath.length - 2] != "commands" ? filepath[filepath.length - 2] : "Default";
             if (!commandsWithDescription.has(categoryID)) {
-                commandsWithDescription.set(categoryID, [k]);
+                commandsWithDescription.set(categoryID, [v.aliases[0]]);
             } else {
                 const arr = commandsWithDescription.get(categoryID);
-                arr.push(k);
+                arr.push(v.aliases[0]);
                 commandsWithDescription.set(categoryID, arr);
             }
         });
