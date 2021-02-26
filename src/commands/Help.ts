@@ -1,5 +1,5 @@
-import {Command} from "discord-akairo";
-import {Collection, Message, MessageEmbed} from "discord.js";
+import { Command } from "discord-akairo";
+import { Collection, Message, MessageEmbed } from "discord.js";
 
 export default class PingCommand extends Command {
     public constructor() {
@@ -27,27 +27,26 @@ export default class PingCommand extends Command {
             description += `\`${prefix}\``;
         else                                      // PrefixSupplier
             description += `\`!\``;
-        
+
         const helpEmbed: MessageEmbed = new MessageEmbed()
             .setTitle("Commands from " + this.client.user.username)
             .setDescription(description);
 
-        const commandsWithDescription: Collection<string, Array<Command>> = new Collection<string, Array<Command>>();
+        const commandsWithDescription: Collection<string, Array<string>> = new Collection<string, Array<string>>();
 
         /**
          * Check whether the category is:
          *  - Inside the Collection (commandsWithDescription) -> Push just the command into the collection entry
          *  - Not inside the Collection (commandsWithDescription) -> Create a new entry with the category id into the collection and set the command as an array as value
          */
-        handler.modules.map((v: Command) => {
-            const filepath = v.filepath.split(/\\+/g);
-            if (filepath.length <= 1) return;
-            const categoryID = filepath[filepath.length - 3 >= 0 ? filepath.length - 3 : 0] == "commands" ? filepath[filepath.length - 2 >= 0 ? filepath.length - 2 : 0] : "Default";
+        handler.modules.map((v: Command, k: string) => {
+            const filepath = v.filepath.split(/\/+/);
+            const categoryID = filepath[filepath.length - 2] != "commands" ? filepath[filepath.length - 2] : "Default";
             if (!commandsWithDescription.has(categoryID)) {
-                commandsWithDescription.set(categoryID, [v]);
+                commandsWithDescription.set(categoryID, [k]);
             } else {
                 const arr = commandsWithDescription.get(categoryID);
-                arr.push(v);
+                arr.push(k);
                 commandsWithDescription.set(categoryID, arr);
             }
         });
@@ -56,7 +55,7 @@ export default class PingCommand extends Command {
          * Loop through each entry from commandsWithDescription and add each category as a field into the embed (helpEmbed)
          */
         commandsWithDescription.forEach((cat, k: string) => {
-            helpEmbed.addField(k, cat.map((v) => `\`${v.id}\``).join(", "), false);
+            helpEmbed.addField(k, cat.map((v) => `\`${v}\``).join(", "), false);
         });
 
         // Send the embed with a reply to the executing message
