@@ -48,13 +48,13 @@ export default class PingCommand extends Command {
 					Color: ${account.embed_color}
 				`);
 
-			return message.util.send({ embed, replyTo: message.id });
+			await message.util.send({ embed, replyTo: message.id });
+		} else {
+			account[`embed_${args.key.toLowerCase()}`] = args.value;
+
+			await this.client.router.accounts.save(account);
+
+			await message.util.send('Your preferences have been updated!', { replyTo: message.id });
 		}
-
-		account[`embed_${args.key.toLowerCase()}`] = args.value;
-
-		await this.client.router.accounts.save(account);
-
-		return message.util.send('Your preferences have been updated!', { replyTo: message.id });
 	}
 }
