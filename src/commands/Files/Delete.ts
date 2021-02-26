@@ -22,7 +22,7 @@ export default class PingCommand extends Command {
 		const file = await this.client.router.files.findOne({ id: args.id, uploadedBy: account.id });
 		if (!file) return message.util.send("I was unable to find the file you're looking for.", { replyTo: message.id });
 
-		const filter = (response: Message) => response.content.toLowerCase() == 'yes' ? true : false;
+		const filter = (response: Message) => response.content.toLowerCase() === 'yes';
 
 		// eslint-disable-next-line no-void
 		void message.util.send('Are you sure to want to delete this file? (reply `yes` or `no`)', { replyTo: message.id }).then(() => {
@@ -30,6 +30,7 @@ export default class PingCommand extends Command {
 				if (collected.size === 0) return message.channel.send('Deletion Cancelled.', { replyTo: message.id });
 
 				await this.client.router.files.delete({ id: args.id });
+				await this.client.router.redis.del(`${args.id}.${file.mimetype}`);
 				await message.util.send(`File \`${args.id}\` has been deleted!`, {replyTo: message.id});
 			}).catch(() => {
 				// eslint-disable-next-line no-void
