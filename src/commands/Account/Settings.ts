@@ -38,7 +38,7 @@ export default class PingCommand extends Command {
 		const account = await this.client.router.accounts.findOne({ user: message.author.id });
 		if (!account) return message.util.send("You don't have an account! To create one please do `!create`", { replyTo: message.id });
 
-		if (args.key === 'default') {
+		if (args.keyArg === 'default') {
 			const embed = new MessageEmbed()
 				.setColor(account.embed_color)
 				.setTitle('Your embed settings.')
@@ -48,13 +48,13 @@ export default class PingCommand extends Command {
 					Color: ${account.embed_color}
 				`);
 
-			return message.util.send({ embed, replyTo: message.id });
+			await message.util.send({ embed, replyTo: message.id });
+		} else {
+			account[`embed_${args.keyArg.toLowerCase()}`] = args.valueArg;
+
+			await this.client.router.accounts.save(account);
+
+			await message.util.send('Your preferences have been updated!', { replyTo: message.id });
 		}
-
-		account[`embed_${args.key.toLowerCase()}`] = args.value;
-
-		await this.client.router.accounts.save(account);
-
-		return message.util.send('Your preferences have been updated!', { replyTo: message.id });
 	}
 }
