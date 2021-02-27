@@ -224,6 +224,7 @@ class APIService {
 			title: account.embed_title,
 			color: account.embed_color,
 			username: account.embed_username,
+			background: account.embed_background,
 			fileName: id,
 			host: process.env.HOSTNAME,
 		});
