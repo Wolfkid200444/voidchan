@@ -210,8 +210,8 @@ class APIService {
 		const file = await this.files.findOne({ id: id.split('.')[0] });
 
 		if (!file) {
-			await reply.header('Content-Type', 'text/plain');
-			await reply.status(404);
+			reply.header('Content-Type', 'text/plain');
+			reply.status(404);
 
 			return 'Image not found!';
 		}
@@ -234,8 +234,8 @@ class APIService {
 	private async handleShareXUpload(req: any, reply: any) {
 		const account = await this.accounts.findOne({ id: req.headers.authorization });
 		if (!account) {
-			await reply.status(401);
-			await reply.header('Content-Type', 'text/plain');
+			reply.status(401);
+			reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -260,7 +260,7 @@ class APIService {
 		await this.cacheFile(id, fileBuffer);
 		logger.info(`Cached file ${id.split('.')[0]} uploaded by user ${account.id}`);
 
-		await reply.header('Content-Type', 'application/json');
+		reply.header('Content-Type', 'application/json');
 
 		return {
 			statusCode: 200,
