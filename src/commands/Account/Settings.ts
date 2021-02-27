@@ -50,6 +50,14 @@ export default class PingCommand extends Command {
 
 			await message.util.send({ embed, replyTo: message.id });
 		} else {
+
+			/**
+			 * Check if the value, while the type is one of the two ('title', 'username'), has a length of more or equal 1000
+			 * (2048 (Max embed description length) - 31 (length of: "title: \nusername: \ncolor: <Hex Code>") / 2 = 1008.5 ≈ 1000)
+			 * characters
+			 */
+			if (["title", "username"].includes(args.keyArg.toLowerCase()) && args.valueArg.length >= 1000) return message.util.send(`The value of the key ${args.keyArg.toLowerCase()} can only have a length of less than 1000 character (${args.valueArg.length}/999).`, { replyTo: message.id });
+
 			account[`embed_${args.keyArg.toLowerCase()}`] = args.valueArg;
 
 			await this.client.router.accounts.save(account);
