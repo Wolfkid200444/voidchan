@@ -89,8 +89,8 @@ class APIService {
 
 	private async viewShortenURL(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
-			await reply.status(401);
-			await reply.header('Content-Type', 'text/plain');
+			reply.status(401);
+			reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -98,8 +98,8 @@ class APIService {
 		const url = await this.urls.findOne({ id });
 
 		if (!url) {
-			await reply.header('Content-Type', 'text/plain');
-			await reply.status(404);
+			reply.header('Content-Type', 'text/plain');
+			reply.status(404);
 
 			return 'The wizards have been unable to find the url you are looking for!';
 		}
@@ -114,8 +114,8 @@ class APIService {
 
 	private async viewShareXUpload(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
-			await reply.status(401);
-			await reply.header('Content-Type', 'text/plain');
+			reply.status(401);
+			reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -124,8 +124,8 @@ class APIService {
 		const image = await this.files.findOne({ id });
 
 		if (!image) {
-			await reply.header('Content-Type', 'text/plain');
-			await reply.status(404);
+			reply.header('Content-Type', 'text/plain');
+			reply.status(404);
 
 			return 'The wizards have been unable to find the file you are looking for!';
 		}
@@ -141,8 +141,8 @@ class APIService {
 
 	private async shortenURL(req: Request, reply: Reply) {
 		if (!req.headers.authorization || req.headers.authorization !== process.env.UPLOAD_SECRET) {
-			await reply.status(401);
-			await reply.header('Content-Type', 'text/plain');
+			reply.status(401);
+			reply.header('Content-Type', 'text/plain');
 
 			return 'You are unable to access this endpoint.';
 		}
@@ -193,16 +193,16 @@ class APIService {
 		const file = await this.getFile(id);
 
 		if (!file) {
-			await reply.header('Content-Type', 'text/plain');
-			await reply.status(404);
+			reply.header('Content-Type', 'text/plain');
+			reply.status(404);
 
 			return 'Image not found!';
 		}
 
 		const mimetype = mime.getType(id.split('.')[1]);
-		await reply.header('Content-Type', mimetype);
+		reply.header('Content-Type', mimetype);
 
-		await reply.send(file);
+		reply.send(file);
 	}
 
 	private async handleFullGetFile(req: Request, reply: any) {

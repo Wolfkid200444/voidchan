@@ -1,10 +1,11 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, Index } from 'typeorm';
 
 type AccountId = string;
 
 @Entity()
 export class FileEntry {
 	@PrimaryColumn()
+	@Index()
 	id: string;
 
 	@Column()
@@ -20,5 +21,6 @@ export class FileEntry {
 	views: number;
 
 	@Column()
+	@Index()
 	uploadedBy: AccountId;
 }
