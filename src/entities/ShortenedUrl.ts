@@ -1,13 +1,14 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, Index } from 'typeorm';
 
 @Entity()
+@Index(['id'])
 export class ShortenedUrl {
 	@PrimaryColumn()
-	id: string;
+	public id: string;
 
 	@Column({ default: 0 })
-	redirects: number;
+	public redirects: number;
 
 	@Column()
-	destUrl: string;
+	public destUrl: string;
 }

@@ -3,24 +3,23 @@ import { Entity, PrimaryColumn, Column, Index } from 'typeorm';
 type AccountId = string;
 
 @Entity()
+@Index(['id', 'uploadedBy'])
 export class FileEntry {
 	@PrimaryColumn()
-	@Index()
-	id: string;
+	public id: string;
 
 	@Column()
-	mimetype: string;
+	public mimetype: string;
 
 	@Column({ type: 'bytea' })
-	buffer: Buffer;
+	public buffer: Buffer;
 
 	@Column({ type: 'timestamp' })
-	uploadDate: Date;
+	public uploadDate: Date;
 
 	@Column({ default: 0 })
-	views: number;
+	public views: number;
 
 	@Column()
-	@Index()
-	uploadedBy: AccountId;
+	public uploadedBy: AccountId;
 }

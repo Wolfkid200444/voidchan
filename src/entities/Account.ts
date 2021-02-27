@@ -5,23 +5,23 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity()
 export class AccountEntry {
 	@PrimaryColumn()
-	user: string;
+	public user: string;
 
 	@Column()
-	id: string;
+	public id: string;
 
 	@Column({ type: 'timestamp' })
-	createdAt: Date;
+	public createdAt: Date;
 
 	@Column({ default: 'Person' })
-	embed_username: string;
+	public embed_username: string;
 
 	@Column({ default: '#ff2a6d' })
-	embed_color: string;
+	public embed_color: string;
 
 	@Column({ default: 'Voidchan Uploads' })
-	embed_title: string;
+	public embed_title: string;
 
 	@Column({ array: true, type: 'text', default: null })
-	registeredDomains: Array<string>;
+	public registeredDomains: Array<string>;
 }
