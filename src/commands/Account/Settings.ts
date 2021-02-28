@@ -14,6 +14,7 @@ export default class PingCommand extends Command {
 			type: (_message: Message, key: string): string => {
 				key = key !== null ? key.toLowerCase() : null;
 
+				return ['color', 'username', 'title', 'background'].includes(key) ? key : 'default';
 			},
 		};
 
