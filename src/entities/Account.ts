@@ -18,6 +18,9 @@ export class AccountEntry {
 
 	@Column({ default: '#ff2a6d' })
 	public embed_color: string;
+	
+	@Column({ default: "#ff2a6d" })
+	public embed_background: string; // Not actually the embed, it is the background from the web, but who knows :yeahBoi:
 
 	@Column({ default: 'Voidchan Uploads' })
 	public embed_title: string;
