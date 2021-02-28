@@ -14,14 +14,14 @@ export default class PingCommand extends Command {
 			type: (_message: Message, key: string): string => {
 				key = key !== null ? key.toLowerCase() : null;
 
-				return ['color', 'username', 'title'].includes(key) ? key : 'default';
+				return ['color', 'username', 'title', 'background'].includes(key) ? key : 'default';
 			},
 		};
 
 		const valueArg = yield {
 			type: (message: Message, value: string): string => {
 				if (keyArg !== 'default' && !value) return null;
-				if (keyArg === 'color' && !/^#[0-9a-f]{3,6}$/i.test(value)) return null;
+				if (keyArg === 'color' || keyArg === 'background' && !/^#[0-9a-f]{3,6}$/i.test(value)) return null;
 
 				return message.content.split(' ').slice(2).join(' ') || 'default';
 			},
@@ -46,6 +46,7 @@ export default class PingCommand extends Command {
 					Title: ${account.embed_title}
 					Username: ${account.embed_username}
 					Color: ${account.embed_color}
+					Site Background Color: ${account.embed_background}
 				`);
 
 			await message.util.send({ embed, replyTo: message.id });
@@ -56,7 +57,7 @@ export default class PingCommand extends Command {
 			 * (2048 (Max embed description length) - 31 (length of: "title: \nusername: \ncolor: <Hex Code>") / 2 = 1008.5 ≈ 1000)
 			 * characters
 			 */
-			if (["title", "username"].includes(args.keyArg.toLowerCase()) && args.valueArg.length >= 1000) return message.util.send(`The value of the key ${args.keyArg.toLowerCase()} can only have a length of less than 1000 character (${args.valueArg.length}/999).`, { replyTo: message.id });
+			if (['title', 'username'].includes(args.keyArg.toLowerCase()) && args.valueArg.length >= 1000) return message.util.send(`The value of the key ${args.keyArg.toLowerCase()} can only have a length of less than 1000 character (${args.valueArg.length}/999).`, { replyTo: message.id });
 
 			account[`embed_${args.keyArg.toLowerCase()}`] = args.valueArg;
 
