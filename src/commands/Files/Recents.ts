@@ -5,6 +5,7 @@ export default class PingCommand extends Command {
 	public constructor() {
 		super('recent', {
 			aliases: ['recent'],
+			ownerOnly: true,
 		});
 	}
 
