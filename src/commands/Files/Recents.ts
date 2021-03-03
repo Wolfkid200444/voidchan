@@ -14,7 +14,7 @@ export default class PingCommand extends Command {
 
 		const files = await this.client.router.files.createQueryBuilder()
 			.select('FileEntry')
-			.where('FileEntry.uploadedBy = :id', { id: message.author.id })
+			.where('FileEntry.uploadedBy = :id', { id: account.id })
 			.limit(10)
 			.getMany();
 
