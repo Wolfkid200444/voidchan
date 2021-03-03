@@ -13,8 +13,8 @@ export default class PingCommand extends Command {
 		if (!account) return message.util.send("You don't have an account! To create one please do `!create`", { replyTo: message.id });
 
 		const files = await this.client.router.files.createQueryBuilder()
-			.select('files')
-			.where('files.uploadedBy = :id', { id: message.author.id })
+			.select('file_entry')
+			.where('file_entry.uploadedBy = :id', { id: message.author.id })
 			.limit(10)
 			.getMany();
 
