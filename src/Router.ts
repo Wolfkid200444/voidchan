@@ -256,6 +256,7 @@ class APIService {
 		file.uploadDate = new Date();
 		file.buffer = fileBuffer;
 		file.uploadedBy = account.id;
+		file.private = false;
 
 		await this.files.save(file);
 		await this.cacheFile(id, fileBuffer);

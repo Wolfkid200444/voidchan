@@ -28,6 +28,7 @@ export default class PingCommand extends Command {
 
 		let description = '';
 		for (const file of files) {
+			// it is intentional to show the full mimetype.
 			description += `\`${file.id}\` (${file.mimetype})\n`;
 		}
 

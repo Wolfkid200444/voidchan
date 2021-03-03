@@ -20,6 +20,11 @@ export class FileEntry {
 	@Column({ default: 0 })
 	public views: number;
 
+	// This is going to be used in the future with the introduction of a login page,
+	// that way only the person who uploaded the image is able to see it.
+	@Column({ type: 'bool'})
+	public private: boolean;
+
 	@Column()
 	public uploadedBy: AccountId;
 }
