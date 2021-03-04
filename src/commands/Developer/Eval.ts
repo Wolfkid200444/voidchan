@@ -1,5 +1,5 @@
 /**
- * Credits to Crawl for this command.
+ * Credits to iCrawl for this command.
  */
 
 import * as util from 'util';
@@ -19,7 +19,7 @@ export default class EvalCommand extends Command {
 
 	public constructor() {
 		super('eval', {
-			aliases: ['e', 'eval'],
+			aliases: ['eval', 'e'],
 			ownerOnly: true,
 			args: [
 				{
