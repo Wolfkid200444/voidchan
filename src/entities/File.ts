@@ -22,7 +22,7 @@ export class FileEntry {
 
 	// This is going to be used in the future with the introduction of a login page,
 	// that way only the person who uploaded the image is able to see it.
-	@Column({ type: 'bool'})
+	@Column({ type: 'bool', nullable: true })
 	public private: boolean;
 
 	@Column()
