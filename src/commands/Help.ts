@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo';
 import { Collection, Message, MessageEmbed } from 'discord.js';
-import {commaListsAnd} from "common-tags";
 
 export default class PingCommand extends Command {
 	public constructor() {
