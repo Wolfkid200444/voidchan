@@ -35,7 +35,7 @@ export default class PingCommand extends Command {
 				.addField('Aliases', command.aliases.map((v, i) => {
 					if (i != 0) return `\`${v}\``; return "";
 				}).join("\n"), true)
-				.addField('Cooldown', command.cooldown, false)
+				.addField('Cooldown', command.cooldown || "No Cooldown", false)
 				.setColor(color)
 				.setFooter(`Detailed command usage for "${command.aliases[0]}"`);
 
